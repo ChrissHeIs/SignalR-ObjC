@@ -103,16 +103,17 @@
     [manager setResponseSerializer:[AFJSONResponseSerializer serializer]];
     //manager = self.securityPolicy;
     SRLogTransportDebug(@"will send at url: %@", [[request URL] absoluteString]);
+    __weak typeof(connection) weakConnection = connection;
     NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
         if (error) {
             SRLogTransportError(@"send failed %@", error);
-            [connection didReceiveError:error];
+            [weakConnection didReceiveError:error];
             if (block) {
                 block(nil, error);
             }
         } else {
             SRLogTransportInfo(@"send was successful %@", responseObject);
-            [connection didReceiveData:responseObject];
+            [weakConnection didReceiveData:responseObject];
             if(block) {
                 block(responseObject, nil);
             }

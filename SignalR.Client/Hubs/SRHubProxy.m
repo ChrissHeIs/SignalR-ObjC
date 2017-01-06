@@ -30,13 +30,16 @@
 
 @interface SRHubProxy ()
 
-@property (assign, nonatomic, readonly) id <SRHubConnectionInterface> connection;
+@property (weak, nonatomic, readonly) id <SRHubConnectionInterface> connection;
 @property (strong, nonatomic, readonly) NSString *hubName;
 @property (strong, nonatomic, readonly) NSMutableDictionary *subscriptions;
 
 @end
 
 @implementation SRHubProxy
+- (void)dealloc {
+    NSLog(@"SRHubProxy %@", self);
+}
 
 #pragma mark - 
 #pragma mark Initialization
@@ -116,7 +119,8 @@
         [NSException raise:NSInvalidArgumentException format:NSLocalizedString(@"Argument args is null",@"NSInvalidArgumentException")];
     }
     
-    NSString *callbackId = [_connection registerCallback:^(SRHubResult *result) {
+    __weak typeof(self) weakSelf = self;
+    NSString *callbackId = [weakSelf.connection registerCallback:^(SRHubResult *result) {
         if (result != nil) {
             if(result.error != nil && ![result.error isKindOfClass:[NSNull class]]) {
                 NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
@@ -125,7 +129,7 @@
                 NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:NSLocalizedString(@"com.SignalR.SignalR-ObjC.%@",@""),NSStringFromClass([self class])]
                                                      code:0
                                                  userInfo:userInfo];
-                [_connection didReceiveError:error];
+                [weakSelf.connection didReceiveError:error];
                 if (block != nil) {
                     block(nil, error);
                 }

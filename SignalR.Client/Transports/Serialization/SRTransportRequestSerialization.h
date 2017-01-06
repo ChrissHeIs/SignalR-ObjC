@@ -11,7 +11,7 @@
 
 @interface SRTransportRequestSerializer : AFHTTPRequestSerializer
 
-@property (nonatomic, assign) id <SRConnectionInterface> connection;
+@property (nonatomic, weak) id <SRConnectionInterface> connection;
 
 + (instancetype)serializerWithConnection:(id <SRConnectionInterface>)connection;
 

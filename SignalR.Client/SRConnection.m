@@ -139,14 +139,14 @@
             
             [strongSelf verifyProtocolVersion:negotiationResponse.protocolVersion];
             
-            _connectionId = negotiationResponse.connectionId;
-            _connectionToken = negotiationResponse.connectionToken;
-            _disconnectTimeout = negotiationResponse.disconnectTimeout;
-            _transportConnectTimeout = @([_transportConnectTimeout integerValue] + [negotiationResponse.transportConnectTimeout integerValue]);
+            strongSelf.connectionId = negotiationResponse.connectionId;
+            strongSelf.connectionToken = negotiationResponse.connectionToken;
+            strongSelf.disconnectTimeout = negotiationResponse.disconnectTimeout;
+            strongSelf.transportConnectTimeout = @([strongSelf.transportConnectTimeout integerValue] + [negotiationResponse.transportConnectTimeout integerValue]);
             
             // If we have a keep alive
             if (negotiationResponse.keepAliveTimeout != nil) {
-                _keepAliveData = [[SRKeepAliveData alloc] initWithTimeout:negotiationResponse.keepAliveTimeout];
+                strongSelf.keepAliveData = [[SRKeepAliveData alloc] initWithTimeout:negotiationResponse.keepAliveTimeout];
             }
             
             [strongSelf startTransport];
@@ -168,9 +168,9 @@
             SRLogConnectionInfo(@"start transport was successful");
             [strongSelf changeState:connecting toState:connected];
             
-            if (_keepAliveData != nil && [_transport supportsKeepAlive]) {
+            if (strongSelf.keepAliveData != nil && [_transport supportsKeepAlive]) {
                 SRLogConnectionDebug(@"connection starting keepalive monitor");
-                [_monitor start];
+                [strongSelf.monitor start];
             }
             
             if(strongSelf.started != nil) {

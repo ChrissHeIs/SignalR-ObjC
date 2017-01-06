@@ -87,7 +87,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"Connection did not receive initialized message before the timeout.", nil),
                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Retry or switch transports.", nil)
             };
-            NSError *timeout = [[NSError alloc]initWithDomain:[NSString stringWithFormat:NSLocalizedString(@"com.SignalR.SignalR-ObjC.%@",@""),NSStringFromClass([self class])] code:NSURLErrorTimedOut userInfo:userInfo];
+            NSError *timeout = [[NSError alloc]initWithDomain:[NSString stringWithFormat:NSLocalizedString(@"com.SignalR.SignalR-ObjC.%@",@""),NSStringFromClass([strongSelf class])] code:NSURLErrorTimedOut userInfo:userInfo];
             SRLogSSEError(@"serverSentEvents failed to receive initialized message before timeout");
             strongSelf.completionHandler(nil, timeout);
             strongSelf.completionHandler = nil;
@@ -139,7 +139,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
         if (strongSelf.completionHandler) {
             SRLogSSEDebug(@"serverSentEvents did fail while connecting");
             [strongSelf didInitializeWithError:[[NSError alloc]initWithDomain:
-              [NSString stringWithFormat:NSLocalizedString(@"com.SignalR.SignalR-ObjC.%@",@""),NSStringFromClass([self class])]
+              [NSString stringWithFormat:NSLocalizedString(@"com.SignalR.SignalR-ObjC.%@",@""),NSStringFromClass([strongSelf class])]
                                                                                  code:NSURLErrorZeroByteResource
                                                                              userInfo:@{
                 NSLocalizedDescriptionKey: NSLocalizedString(@"Connection failed to initialize.", nil),
@@ -204,7 +204,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
                 [strongSelf processResponse:strongConnection response:data shouldReconnect:&shouldReconnect disconnected:&disconnect];
                 if(disconnect) {
                     SRLogSSEDebug(@"serverSentEvents did receive disconnect command from server");
-                    _stop = YES;
+                    strongSelf.stop = YES;
                     [strongConnection disconnect];
                 }
             }
@@ -229,7 +229,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
         __strong __typeof(&*weakSelf)strongSelf = weakSelf;
         __strong __typeof(&*weakConnection)strongConnection = weakConnection;
         
-        if (connection.state != disconnected && [SRConnection ensureReconnecting:strongConnection]) {
+        if (strongConnection.state != disconnected && [SRConnection ensureReconnecting:strongConnection]) {
             SRLogSSEWarn(@"reconnecting");
             [strongSelf.eventSource cancel];
             //now that all the current connections are tearing down, we have the queue to ourselves
