@@ -31,6 +31,8 @@
 #import <Foundation/Foundation.h>
 #import "SRClientTransportInterface.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SRHttpBasedTransport : NSObject <SRClientTransportInterface>
 
 @property (strong, nonatomic, readonly) NSURLSessionConfiguration *sessionConfiguration;
@@ -50,3 +52,5 @@
 - (NSDictionary *)addQueryString:(NSDictionary *)parameters connection:(id <SRConnectionInterface>)connection;
 
 @end
+
+NS_ASSUME_NONNULL_END
